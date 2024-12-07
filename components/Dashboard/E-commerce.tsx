@@ -1,12 +1,6 @@
 "use client";
 import React from "react";
 import DataStatsOne from "@/components/DataStats/DataStatsOne";
-import ChartOne from "@/components/Charts/ChartOne";
-import ChartTwo from "@/components/Charts/ChartTwo";
-import ChartThree from "@/components/Charts/ChartThree";
-import TableOne from "@/components/Tables/TableOne";
-import MapOne from "@/components/Maps/MapOne";
-import ChatCard from "../Chat/ChatCard";
 import ProfileCard from "@/components/ProfileCard/ProfileCard"; // Profile Management Component
 import ServiceManagement from "@/components/ServiceManagement/ServiceManagement"; // Service Management Component
 import AvailabilityManagement from "@/components/AvailabilityManagement/AvailabilityManagement"; // Availability Management Component
