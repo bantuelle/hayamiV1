@@ -80,16 +80,16 @@ const Footer = () => {
                   className="animate_top"
                 >
                   <h4 className="mb-9 text-itemtitle2 font-medium text-black dark:text-white">
-                    Quick Links
+                    Work with us
                   </h4>
 
                   <ul>
                     <li>
                       <a
-                        href="#"
+                        href="/auth/providersignup"
                         className="mb-3 inline-block hover:text-primary"
                       >
-                        Home
+                        Become a service provider
                       </a>
                     </li>
                     <li>
@@ -97,7 +97,7 @@ const Footer = () => {
                         href="#"
                         className="mb-3 inline-block hover:text-primary"
                       >
-                        Product
+                        Become a partner
                       </a>
                     </li>
                     <li>
@@ -108,14 +108,14 @@ const Footer = () => {
                         Careers
                       </a>
                     </li>
-                    <li>
+                    {/* <li>
                       <a
                         href="#"
                         className="mb-3 inline-block hover:text-primary"
                       >
                         Pricing
                       </a>
-                    </li>
+                    </li> */}
                   </ul>
                 </motion.div>
 
