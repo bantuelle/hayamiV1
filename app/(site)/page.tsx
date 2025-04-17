@@ -13,6 +13,8 @@ import Contact from "@/components/Contact";
 import Blog from "@/components/Blog";
 import Testimonial from "@/components/Testimonial";
 import Onboarding from "@/components/Onboarding";
+import { useRouter } from 'next/router';
+import { FaTruckMoving, FaBroom, FaCut, FaPaintBrush, FaCode, FaTools } from "react-icons/fa";
 
 export const metadata: Metadata = {
   title: "Hayami - On Demand Artisan Services",

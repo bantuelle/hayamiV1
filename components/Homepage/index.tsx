@@ -1,7 +1,9 @@
-"use client"
+'use client';
+
 import React, { useState, useEffect } from "react";
 import { FaSearch, FaTools, FaCode, FaPaintBrush, FaTruckMoving, FaBroom, FaCut } from "react-icons/fa";
 import axios from "axios"; // Optional for using Axios instead of fetch
+import { useRouter } from 'next/navigation';
 
 interface Location {
   latitude: number;
@@ -14,6 +16,7 @@ interface Service {
 }
 
 export default function Homepage() {
+  const router = useRouter(); //initialize useRouter for navigation
   const [location, setLocation] = useState<Location | null>(null);
   const [locationName, setLocationName] = useState<string>("Detecting...");
   const [searchQuery, setSearchQuery] = useState<string>(""); // State for search input
@@ -28,6 +31,7 @@ export default function Homepage() {
     { name: "General Repairs", icon: <FaTools /> },
   ];
 
+  //fetch user location (same as your previous code)
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -71,25 +75,31 @@ export default function Homepage() {
     fetchLocationName();
   }, [location]);
 
+  //handle click on service to navigate to the businesses page
+  const handleServiceClick = (serviceName: string) => {
+    //redirect to the businesses page with the selected service as a query param
+    router.push(`/Businesses?service=${serviceName}`);
+  };
+
+  //handle search query change (same as your previous code)
   const handleSearchChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setSearchQuery(query);
 
-    // If search query is empty, return
+    //if search query is empty, return
     if (query.trim() === "") {
       setSuggestions([]);
       return;
     }
 
     try {
-      const response = await axios.get('http://localhost:4000/api/autocomplete', {
+      const response = await axios.get('http://localhost:3000/api/autocomplete', {
         params: { input: query }
       });
     
-      // Assuming the response is an array of service names, not predictions
       const result = response.data.map((service: string) => ({
         name: service,
-        icon: <FaSearch /> // Adjust the icon as per your need
+        icon: <FaSearch /> 
       }));
     
       setSuggestions(result);
@@ -98,10 +108,12 @@ export default function Homepage() {
     }
   };
 
-  // Function to handle selecting a suggestion
+  //function to handle selecting a suggestion
   const handleSuggestionClick = (suggestion: Service) => {
-    setSearchQuery(suggestion.name); // Set the search query to the selected suggestion's name
-    setSuggestions([]); // Hide the suggestions dropdown
+    setSearchQuery(suggestion.name); //set the search query to the selected suggestion's name
+    setSuggestions([]); //hide suggestions dropdown
+    //redirect to the businesses page with the selected service
+    router.push(`/businesses?service=${suggestion.name}`);
   };
 
   return (
@@ -162,6 +174,7 @@ export default function Homepage() {
             <div
               key={index}
               className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transform transition hover:scale-105 cursor-pointer"
+              onClick={() => handleServiceClick(service.name)} // Call handleServiceClick on service click
             >
               <span className="text-purple-500 dark:text-purple-400 text-5xl mb-4">
                 {service.icon}

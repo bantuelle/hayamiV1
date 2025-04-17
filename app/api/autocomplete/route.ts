@@ -1,15 +1,10 @@
-const express = require('express');
-const axios = require('axios');
-const cors = require('cors');
+import { NextResponse } from 'next/server';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const input = searchParams.get("input") || "";
 
-// Enable CORS for frontend communication
-app.use(cors());
-// List of services similar to TaskRabbit, including South Africa-specific services
-const services = [
-  'Plumber',
+  const services = [  'Plumber',
   'Electrician',
   'Carpenter',
   'Painter',
@@ -161,7 +156,6 @@ const services = [
   'Grooming Services',
   'House Cleaning',
   'Pool Repairs',
-  
   // South Africa-specific services
   'Domestic Worker',
   'Nanny',
@@ -213,27 +207,10 @@ const services = [
   'Commercial Cleaning',
   'Gardening Services',
   'Professional Drivers',
-  'Mobile Car Wash'
-  // Add more services as necessary
-];
-
-// API route for autocomplete
-app.get('/api/autocomplete', (req, res) => {
-  const query = req.query.input?.toLowerCase() || ''; //get the query parameter "input" and make it lowercase
-  if (!query) {
-    return res.status(400).json({ error: 'Input is required for autocomplete.' });
-  }
-
-  //filter the services list based on the query input
-  const filteredServices = services.filter(service =>
-    service.toLowerCase().includes(query)  // Match input with service names
+  'Mobile Car Wash'];
+  const results = services.filter(service =>
+    service.toLowerCase().includes(input.toLowerCase())
   );
 
-  //send the filtered list of services as the response
-  res.json(filteredServices);
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  return NextResponse.json(results);
+}
