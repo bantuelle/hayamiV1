@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 // Enable CORS for frontend communication
 app.use(cors());
-// List of services similar to TaskRabbit, including South Africa-specific services
+
 const services = [
   'Plumber',
   'Electrician',
@@ -162,7 +162,7 @@ const services = [
   'House Cleaning',
   'Pool Repairs',
   
-  // South Africa-specific services
+  //South Africa-specific services
   'Domestic Worker',
   'Nanny',
   'Security Guard',
@@ -214,7 +214,6 @@ const services = [
   'Gardening Services',
   'Professional Drivers',
   'Mobile Car Wash'
-  // Add more services as necessary
 ];
 
 // API route for autocomplete
