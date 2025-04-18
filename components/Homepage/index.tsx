@@ -78,7 +78,7 @@ export default function Homepage() {
   //handle click on service to navigate to the businesses page
   const handleServiceClick = (serviceName: string) => {
     //redirect to the businesses page with the selected service as a query param
-    router.push(`/Businesses?service=${serviceName}`);
+    router.push(`/businesses?service=${serviceName}`);
   };
 
   //handle search query change (same as your previous code)
