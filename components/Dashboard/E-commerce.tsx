@@ -5,12 +5,14 @@ import { useTheme } from "next-themes";
 import toast, { Toaster } from "react-hot-toast";
 import { CheckCircle, DollarSign, CalendarDays, MessageSquare,PlusCircle,Settings, Pencil, Trash2,} from "lucide-react";
 import { Dialog } from "@headlessui/react";
-import Navbar from "@/components/Header";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 type Booking = {
   id: number;
   customer: string;
   date: string;
+  time: string;
   amount: number;
 };
 
@@ -27,19 +29,61 @@ const ECommerce = () => {
   });
   
   const [availability, setAvailability] = useState([
-    { day: "Monday", available: true },
-    { day: "Tuesday", available: false },
-    { day: "Wednesday", available: true },
-    { day: "Thursday", available: false },
-    { day: "Friday", available: true },
-    { day: "Saturday", available: false },
-    { day: "Sunday", available: true },
+    { day: "Monday", slots: ["9:00", "10:00", "11:00"] },
+    { day: "Tuesday", slots: ["9:00", "10:00", "11:00"] },
+    { day: "Wednesday", slots: ["9:00", "10:00", "11:00"] },
+    { day: "Thursday", slots: [] }, //no slots = unavailable
+    { day: "Friday", slots: ["10:00", "11:00"] },
+    { day: "Saturday", slots: [] },
+    { day: "Sunday", slots: ["9:00"] },
   ]);
-
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  
   const [bookings, setBookings] = useState([
-    { id: 1, customer: "John Doe", date: "2025-04-21", amount: 100 },
-    { id: 2, customer: "Jane Smith", date: "2025-04-22", amount: 150 },
+    { id: 1, customer: "John Doe", date: "2025-04-21", time: "9:00", amount: 100 },
+    { id: 2, customer: "Jane Smith", date: "2025-04-22", time: "10:00", amount: 150 },
   ]);
+  const timeSlots = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"];
+
+  const bookedSlots = {
+    "2025-04-21": ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"], //fully booked
+    "2025-04-22": ["14:00", "15:00"], //partially booked
+    "2025-04-23": [], //fully available
+  };
+
+  //get the available slots for a specific date
+  const getAvailableSlots = (date: Date | null) => {
+    if (!date) return [];
+
+    const dateStr = date.toISOString().split("T")[0];
+    const bookedForDate = bookedSlots[dateStr] || [];
+    
+    return timeSlots.filter(slot => !bookedForDate.includes(slot));
+  };
+
+  const availableSlots = getAvailableSlots(selectedDate);
+
+  //check if a date has available slots
+  const isDateAvailable = (date: Date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    return bookedSlots[dateStr]?.length < timeSlots.length;
+  };
+
+  //customising day styles based on availability
+  const getDayClassName = (date: Date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    const bookedForDate = bookedSlots[dateStr] || [];
+
+    if (bookedForDate.length === timeSlots.length) {
+      return "bg-red-500 text-white"; //fully booked
+    } else if (bookedForDate.length > 0) {
+      return "bg-yellow-400 text-black"; //partially booked
+    } else {
+      return "bg-green-200 text-black"; //fully available
+    }
+  };
+
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,14 +98,6 @@ const ECommerce = () => {
       duration: 4000,
       position: "top-center",
     });
-  };
-  const handleAvailabilityChange = (day: string) => {
-    setAvailability((prev) =>
-      prev.map((item) =>
-        item.day === day ? { ...item, available: !item.available } : item
-      )
-    );
-    toast("Availability Updated for" + " "+day+"!");
   };
 
   const handleWithdraw = () => {
@@ -116,27 +152,6 @@ const ECommerce = () => {
   };
  const isLoggedIn = true
   return (
-     <>
-     {!isLoggedIn && <Navbar />}
-
-  <div
-    className={`min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 ${
-      isLoggedIn ? "pt-12" : "pt-40"
-    }`}
-  >
-  {isLoggedIn && (
-    <div className="absolute top-4 right-6">
-      <button
-        onClick={() => {
-          toast("Logged out");
-        }}
-        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow"
-      >
-        Log out
-      </button>
-    </div>
-  )}
-
       <div className="min-h-screen flex flex-col items-center pt-40 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <header className="w-full max-w-4xl px-6 text-center mb-10">
           <h1 className="text-5xl font-extrabold tracking-wide">Business Dashboard</h1>
@@ -260,22 +275,59 @@ const ECommerce = () => {
       </div>
     </section>
 
-        <section className="w-full max-w-4xl px-6 mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Availability</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {availability.map((day) => (
-              <button
-                key={day.day}
-                onClick={() => handleAvailabilityChange(day.day)}
-                className={`px-4 py-3 rounded-xl shadow-md font-medium flex items-center justify-center gap-2 transition-transform duration-200 active:scale-95
-                  ${day.available ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"} text-white`}
-              >
-                <CheckCircle className="w-5 h-5" />
-                {day.day}: {day.available ? "Available" : "Unavailable"}
-              </button>
-            ))}
+    <section className="w-full max-w-4xl px-6 mb-12">
+    <div className="w-full max-w-4xl px-6 mb-12">
+      <h2 className="text-2xl font-semibold mb-6">Availability</h2>
+      <div className="p-4 space-y-4 max-w-sm mx-auto">
+        <DatePicker
+          selected={selectedDate}
+          onChange={(date) => {
+            setSelectedDate(date);
+            setSelectedTime(""); // reset time when date changes
+          }}
+          filterDate={(date) => getAvailableSlots(date).length > 0}
+          placeholderText="Select a date"
+          className="border px-4 py-2 rounded w-full"
+        />
+
+        {selectedDate && (
+          <div className="grid grid-cols-3 gap-2 mt-4">
+            {timeSlots.map((slot) => {
+              const isBooked = bookedSlots[selectedDate.toISOString().split("T")[0]]?.includes(slot);
+              const isSelected = selectedTime === slot;
+              const isAvailable = !isBooked;
+
+              return (
+                <button
+                  key={slot}
+                  onClick={() => isAvailable && setSelectedTime(slot)} // Only allow selection of available slots
+                  className={`px-2 py-1 border rounded ${
+                    isSelected
+                      ? "bg-blue-500 text-white"
+                      : isBooked
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed" // Booked slots (unavailable)
+                      : "hover:bg-blue-100" // Available slots (hover effect)
+                  }`}
+                  disabled={isBooked} // Disable clicked booked slots
+                >
+                  {slot}
+                </button>
+              );
+            })}
+            {availableSlots.length === 0 && (
+              <p className="text-sm text-gray-500 col-span-3">No slots available</p>
+            )}
           </div>
-        </section>
+        )}
+
+        {selectedDate && selectedTime && (
+          <p className="text-green-600 font-medium mt-4">
+            Booking selected: {selectedDate.toLocaleDateString()} at {selectedTime}
+          </p>
+        )}
+      </div>
+    </div>
+    </section>
 
         <section className="w-full max-w-4xl px-6 mb-12">
           <h2 className="text-3xl font-semibold mb-6">Your Bookings</h2>
@@ -316,7 +368,7 @@ const ECommerce = () => {
         <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen p-4">
             <Dialog.Panel className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md">
-              <Dialog.Title className="text-xl font-semibold mb-4">Manage Booking</Dialog.Title>
+            <Dialog.Title className="text-2xl font-semibold text-center mb-6">Booking Information</Dialog.Title>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Customer</label>
@@ -360,8 +412,6 @@ const ECommerce = () => {
           </div>
         </Dialog>
       </div>
-    </div>
-    </>
   );
 };
 
