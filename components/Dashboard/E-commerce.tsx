@@ -21,8 +21,11 @@ const ECommerce = () => {
     name: "Business Name",
     email: "business@example.co.za",
     phone: "+27 83-652-7922",
+    location: "Durban, KwaZulu Natal",   
+    accountNumber: "640352600",
+    bankName: "First National Bank",
   });
-
+  
   const [availability, setAvailability] = useState([
     { day: "Monday", available: true },
     { day: "Tuesday", available: false },
@@ -44,6 +47,7 @@ const ECommerce = () => {
   const [withdrawals, setWithdrawals] = useState<number[]>([]);
   const revenue = bookings.reduce((acc, cur) => acc + cur.amount, 0);
   const availableBalance = revenue - withdrawals.reduce((a, b) => a + b, 0);
+  const [gallery, setGallery] = useState<File[]>([]);
 
   const handleProfileUpdate = () => {
     toast.success("Profile Updated!", {
@@ -84,9 +88,13 @@ const ECommerce = () => {
     );
   };
   
-  
+  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setGallery(Array.from(e.target.files));
+    }
+  };
   const handleSaveBooking = () => {
-    if (!selectedBooking) return;  // Ensure there's a selectedBooking
+    if (!selectedBooking) return;
     setBookings((prev) =>
       prev.map((b) => (b.id === selectedBooking.id ? selectedBooking : b))
     );
@@ -155,43 +163,102 @@ const ECommerce = () => {
         </section>
 
         <section className="w-full max-w-4xl px-6 mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Your Profile</h2>
-          <div className="bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
-              <input
-                placeholder="Name"
-                value={profile.name}
-                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
-              />
+      <h2 className="text-3xl font-semibold mb-6">Your Profile</h2>
+      <div className="bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Name</label>
+          <input
+            value={profile.name}
+            onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+            className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
+            placeholder="Enter your name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Email</label>
+          <input
+            value={profile.email}
+            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+            className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
+            placeholder="Enter your email"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Phone</label>
+          <input
+            value={profile.phone}
+            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+            className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
+            placeholder="Enter your phone number"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Location</label>
+          <input
+            value={profile.location}
+            onChange={(e) =>
+              setProfile({ ...profile, location: e.target.value })
+            }
+            className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
+            placeholder="Enter your location"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Account Number</label>
+          <input
+            value={profile.accountNumber}
+            onChange={(e) =>
+              setProfile({ ...profile, accountNumber: e.target.value })
+            }
+            className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
+            placeholder="Enter your account numberr"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Bank Name</label>
+          <input
+            value={profile.bankName}
+            onChange={(e) => setProfile({ ...profile, bankName: e.target.value })}
+            className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
+            placeholder="Enter your bank name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Gallery</label>
+          <input
+            type="file"
+            multiple
+            onChange={handleGalleryChange}
+            className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
+            placeholder="Upload images"
+          />
+          <div className="mt-4">
+            <h4 className="text-sm font-medium">Selected Images:</h4>
+            <div className="flex gap-4 mt-2">
+              {gallery.length > 0 ? (
+                gallery.map((image, index) => (
+                  <div key={index} className="w-20 h-20 rounded overflow-hidden">
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`gallery-image-${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))
+              ) : (
+                <p>No images selected</p>
+              )}
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <input
-                placeholder="Email address"
-                value={profile.email}
-                onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Phone</label>
-              <input
-                placeholder="Phone No."
-                value={profile.phone}
-                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                className="w-full bg-gray-100 dark:bg-gray-700 p-2 rounded"
-              />
-            </div>
-            <button
-              onClick={handleProfileUpdate}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded shadow"
-            >
-              Save Changes
-            </button>
           </div>
-        </section>
+        </div>
+        <button
+          onClick={handleProfileUpdate}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded shadow"
+        >
+          Save Changes
+        </button>
+      </div>
+    </section>
 
         <section className="w-full max-w-4xl px-6 mb-12">
           <h2 className="text-3xl font-semibold mb-6">Availability</h2>
