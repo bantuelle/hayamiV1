@@ -335,7 +335,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="block lg:hidden"
+            className="block lg:hidden" title="Action"
           >
             <svg
               className="fill-current"
